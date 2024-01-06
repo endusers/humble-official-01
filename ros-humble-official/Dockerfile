@@ -29,7 +29,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-rqt-tf-tree \
     ros-humble-rqt-robot-steering \
     ros-humble-xacro \
-    ros-humble-gazebo-ros-pkgs \
+    # ros-humble-gazebo-ros-pkgs \
     ros-humble-joint-state-publisher-gui \
     ros-humble-joy-linux \
     ros-humble-joy-linux-dbgsym \
@@ -42,107 +42,55 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-geometry2 \
     ros-humble-tf2-geometry-msgs
 
-# nav2
+# gazebo-ros-pkgs
+# RUN apt-get update && apt-get install -y --no-install-recommends \
+#     gazebo \
+#     libgazebo-dev \
+#     ros-humble-camera-info-manager \
+#     libdw-dev \
+#     ros-humble-launch-pytest \
+#     python3-tqdm \
+#     python3-requests
+
+# gazebo-ros-pkgs
+RUN if [ $(uname -m) = "x86_64" ]; then \
+        apt-get update && apt-get install -y --no-install-recommends \
+        ros-humble-gazebo-ros-pkgs; \
+    else \
+        echo "not install ros-humble-gazebo-ros-pkgs"; \
+fi
+
+# navigation2
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ros-humble-test-msgs \
     ros-humble-behaviortree-cpp-v3 \
+    ros-humble-test-msgs \
     ros-humble-ompl \
-    ros-humble-nav2-msgs \
-    ros-humble-bond \
-    ros-humble-bondcpp \
-    ros-humble-smclib
-
-# nav2
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libxtensor-dev \
     nlohmann-json3-dev \
-    xtl-dev \
-    libomp-14-dev \
-    libomp-dev \
-    libomp5-14 \
-    libbenchmark-dev \
-    libbenchmark1 \
-    bzip2-doc \
-    fonts-droid-fallback \
-    fonts-noto-mono \
-    fonts-urw-base35 \
-    ghostscript \
-    gsfonts \
-    libbz2-dev \
-    libgraphicsmagick++-q16-12 \
-    libgraphicsmagick++1-dev \
-    libgraphicsmagick-q16-3 \
-    libgraphicsmagick1-dev \
-    libgs9 \
-    libgs9-common \
-    libidn12 \
-    libijs-0.35 \
-    libjbig2dec0 \
-    liblcms2-dev \
-    libpaper-utils \
-    libpaper1 \
-    libwmf-0.2-7 \
-    libwmf-dev \
-    libwmflite-0.2-7 \
-    poppler-data \
-    graphicsmagick-libmagick-dev-compat \
-    libgraphics-magick-perl \
+    ros-humble-bondcpp \
+    ros-humble-bond \
     lcov \
-    libcommon-sense-perl \
-    libgd-perl \
-    libjson-perl \
-    libjson-xs-perl \
-    libperlio-gzip-perl \
-    libtypes-serialiser-perl \
     python3-zmq \
-    libamd2 \
-    libbtf1 \
-    libcamd2 \
-    libccolamd2 \
-    libcholmod3 \
-    libcolamd2 \
-    libcxsparse3 \
-    libgraphblas-dev \
-    libgraphblas6 \
-    libklu1 \
-    libldl2 \
-    libmetis5 \
-    libmongoose2 \
-    librbio2 \
-    libsliplu1 \
-    libspqr2 \
-    libsuitesparse-dev \
-    libsuitesparseconfig5 \
-    libumfpack5 \
-    libceres-dev \
-    libceres2 \
-    libgflags-dev \
-    libgflags2.2 \
-    libgoogle-glog-dev \
-    libgoogle-glog0v5 \
-    libunwind-dev
-
-# ublox
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ros-humble-nmea-msgs \
-    ros-humble-rtcm-msgs
+    libgraphicsmagick++1-dev \
+    graphicsmagick-libmagick-dev-compat \
+    libxtensor-dev \
+    libomp-dev \
+    libbenchmark-dev \
+    libceres-dev
 
 # ublox
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libasio-dev \
-    i2c-tools \
-    libi2c0 \
-    libx86-1 \
-    read-edid \
-    systemd-hwe-hwdb
+    ros-humble-nmea-msgs \
+    ros-humble-rtcm-msgs
 
-# realsense
+# realsense-ros
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-librealsense2
 
 RUN pip install mcap-ros2-support
-RUN pip install geopandas
+RUN pip install fiona
 RUN pip install pandas
+RUN pip install geopandas
 
 RUN pip install setuptools==58.2.0
 
@@ -153,6 +101,7 @@ RUN echo "docker:docker" | chpasswd
 RUN adduser docker sudo
 
 RUN usermod -a -G audio docker
+RUN usermod -a -G dialout docker
 
 USER docker
 
