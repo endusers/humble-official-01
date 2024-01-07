@@ -20,6 +20,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-serial \
     python3-pykdl \
     python3-smbus \
+    python3-tqdm \
+    python3-requests \
     udev \
     libgeographic-dev \
     libqt5svg5-dev
@@ -30,6 +32,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-rqt-robot-steering \
     ros-humble-xacro \
     # ros-humble-gazebo-ros-pkgs \
+    ros-humble-camera-info-manager \
+    ros-humble-launch-pytest \
     ros-humble-joint-state-publisher-gui \
     ros-humble-joy-linux \
     ros-humble-joy-linux-dbgsym \
@@ -43,22 +47,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-tf2-geometry-msgs
 
 # gazebo-ros-pkgs
-# RUN apt-get update && apt-get install -y --no-install-recommends \
-#     gazebo \
-#     libgazebo-dev \
-#     ros-humble-camera-info-manager \
-#     libdw-dev \
-#     ros-humble-launch-pytest \
-#     python3-tqdm \
-#     python3-requests
-
-# gazebo-ros-pkgs
-RUN if [ $(uname -m) = "x86_64" ]; then \
+RUN if [ $(uname -m) = "x86_64" ] ; \
+    then \
         apt-get update && apt-get install -y --no-install-recommends \
         ros-humble-gazebo-ros-pkgs; \
     else \
         echo "not install ros-humble-gazebo-ros-pkgs"; \
-fi
+    fi
 
 # navigation2
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -76,6 +71,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libomp-dev \
     libbenchmark-dev \
     libceres-dev
+
+# Groot
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libdw-dev
 
 # ublox
 RUN apt-get update && apt-get install -y --no-install-recommends \
