@@ -24,7 +24,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-requests \
     udev \
     libgeographic-dev \
-    libqt5svg5-dev
+    libqt5svg5-dev \
+    terminator \
+    i2c-tools
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-rosbag2-storage-mcap \
@@ -101,6 +103,7 @@ RUN adduser docker sudo
 
 RUN usermod -a -G audio docker
 RUN usermod -a -G dialout docker
+RUN usermod -a -G i2c docker
 
 USER docker
 
