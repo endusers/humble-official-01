@@ -1,0 +1,25 @@
+version: '3'
+services:
+
+    ros2-humble-official-01:
+        build: .
+        image: rosenv:ros2-humble-official-01
+        container_name: ros2-humble-official-01
+        network_mode: host
+        privileged: true
+        #security_opt:
+        #- apparmor:unconfined
+        runtime: nvidia
+        #stdin_open: true
+        tty: true
+        devices:
+        - /dev/snd:/dev/snd
+        environment:
+        - DISPLAY=${DISPLAY}
+        - NVIDIA_VISIBLE_DEVICES=all
+        - NVIDIA_DRIVER_CAPABILITIES=all
+        - ROS_DOMAIN_ID=${ROS_DOMAIN_ID}
+        volumes:
+        - /tmp/.X11-unix:/tmp/.X11-unix
+        - ${PWD}/home:/home/docker/mnt
+        - ${PWD}/tmp:/home/docker/mnt/tmp

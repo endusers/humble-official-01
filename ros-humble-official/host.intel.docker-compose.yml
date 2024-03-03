@@ -1,0 +1,23 @@
+version: '3'
+services:
+
+    ros2-humble-official-01:
+        build: .
+        image: rosenv:ros2-humble-official-01
+        container_name: ros2-humble-official-01
+        network_mode: host
+        privileged: true
+        #security_opt:
+        #- apparmor:unconfined
+        #stdin_open: true
+        tty: true
+        devices:
+        - /dev/snd:/dev/snd
+        - /dev/dri:/dev/dri
+        environment:
+        - DISPLAY=${DISPLAY}
+        - ROS_DOMAIN_ID=${ROS_DOMAIN_ID}
+        volumes:
+        - /tmp/.X11-unix:/tmp/.X11-unix
+        - ${PWD}/home:/home/docker/mnt
+        - ${PWD}/tmp:/home/docker/mnt/tmp
