@@ -74,6 +74,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libbenchmark-dev \
     libceres-dev
 
+# rtabmap
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-humble-libg2o \
+    ros-humble-gtsam \
+    ros-humble-libpointmatcher \
+    ros-humble-octomap \
+    ros-humble-grid-map-core \
+    ros-humble-pcl-ros \
+    ros-humble-velodyne \
+    ros-humble-octomap-msgs \
+    ros-humble-grid-map-ros
+
 # Groot
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libdw-dev
