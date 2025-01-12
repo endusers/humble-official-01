@@ -1,10 +1,19 @@
+ARG BUILD_WITH_CUDA=OFF
+
 FROM ros:humble
+
+ARG BUILD_WITH_CUDA
 
 SHELL ["/bin/bash", "-c"]
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ros-humble-desktop=0.10.0-1* \
+WORKDIR /home/setup
+
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive \
+    apt-get install -y --no-install-recommends \
+    tzdata \
     && rm -rf /var/lib/apt/lists/*
+ENV TZ=Asia/Tokyo
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     sudo \
@@ -16,6 +25,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     zip \
     unzip \
     psmisc \
+    wget \
+    git \
+    cmake \
+    software-properties-common \
     python3-pip \
     python3-serial \
     python3-pykdl \
@@ -26,7 +39,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgeographic-dev \
     libqt5svg5-dev \
     terminator \
-    i2c-tools
+    i2c-tools \
+    libapr1-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY /setup/setup-cuda.sh ./
+RUN if [ ${BUILD_WITH_CUDA} = ON ] ; \
+    then \
+        ./setup-cuda.sh ; \
+    fi
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-humble-desktop \
+    ros-dev-tools \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-rosbag2-storage-mcap \
@@ -46,15 +72,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-depthimage-to-laserscan \
     ros-humble-geographic-msgs \
     ros-humble-geometry2 \
-    ros-humble-tf2-geometry-msgs
+    ros-humble-tf2-geometry-msgs \
+    ros-humble-plotjuggler-ros \
+    && rm -rf /var/lib/apt/lists/*
 
 # gazebo-ros-pkgs
-RUN if [ $(uname -m) = "x86_64" ] ; \
+RUN if [ $(uname -m) = 'x86_64' ] ; \
     then \
         apt-get update && apt-get install -y --no-install-recommends \
         ros-humble-gazebo-ros-pkgs; \
     else \
-        echo "not install ros-humble-gazebo-ros-pkgs"; \
+        echo "not install ros-humble-gazebo-ros-pkgs" ; \
     fi
 
 # navigation2
@@ -72,7 +100,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxtensor-dev \
     libomp-dev \
     libbenchmark-dev \
-    libceres-dev
+    libceres-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # rtabmap
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -80,26 +109,43 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-gtsam \
     ros-humble-libpointmatcher \
     ros-humble-octomap \
-    ros-humble-grid-map-core \
+    # ros-humble-grid-map-core \
+    # ros-humble-grid-map-ros \
     ros-humble-pcl-ros \
     ros-humble-velodyne \
     ros-humble-octomap-msgs \
-    ros-humble-grid-map-ros
+    && rm -rf /var/lib/apt/lists/*
 
 # Groot
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libdw-dev
+    libdw-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # ublox
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libasio-dev \
     ros-humble-nmea-msgs \
-    ros-humble-rtcm-msgs
+    ros-humble-rtcm-msgs \
+    && rm -rf /var/lib/apt/lists/*
 
-# realsense-ros
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ros-humble-librealsense2
+# librealsense2
+COPY /setup/setup-librealsense.sh ./
+RUN if [ ${BUILD_WITH_CUDA} = ON ] ; \
+    then \
+        ./setup-librealsense.sh ; \
+    fi
+RUN if [ ${BUILD_WITH_CUDA} = OFF ] ; \
+    then \
+        apt-get update && apt-get install -y --no-install-recommends \
+        ros-humble-librealsense2 \
+        && rm -rf /var/lib/apt/lists/* ; \
+    fi
 
+# livox-sdk2
+COPY /setup/setup-livox-sdk.sh ./
+RUN ./setup-livox-sdk.sh
+
+# pip
 RUN pip install mcap-ros2-support
 RUN pip install fiona
 RUN pip install pandas
@@ -115,11 +161,18 @@ RUN adduser docker sudo
 
 RUN usermod -a -G audio docker
 RUN usermod -a -G dialout docker
+RUN usermod -a -G video docker
 RUN usermod -a -G i2c docker
 
 USER docker
 
 WORKDIR /home/docker
 
-RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+RUN if [ ${BUILD_WITH_CUDA} = ON ] ; \
+    then \
+      echo 'export PATH=/usr/local/cuda/bin:${PATH}' >> ~/.bashrc ; \
+      echo 'export LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH}' >> ~/.bashrc ; \
+    fi
+
+RUN echo 'source /opt/ros/humble/setup.bash' >> ~/.bashrc
 RUN source ~/.bashrc

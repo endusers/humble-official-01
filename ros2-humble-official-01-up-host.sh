@@ -1,16 +1,21 @@
 #!/bin/bash
 
+CURRENT_DIR=`pwd`
+cd `dirname $0`
+SCRIPTS_DIT=`pwd`
+
+source ${SCRIPTS_DIT}/ros-humble-official/.env
+
 USE_ENV='nvidia'
+
 while getopts wi- OPT
 do
     if [ ${OPT} = w ]
     then
         USE_ENV='wsl'
-        break
     elif [ ${OPT} = i ]
     then
         USE_ENV='intel'
-        break
     else
         break
     fi

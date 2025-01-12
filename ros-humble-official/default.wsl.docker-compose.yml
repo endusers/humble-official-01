@@ -2,7 +2,12 @@ version: '3'
 services:
 
     ros2-humble-official-01:
-        build: .
+        build:
+            context: .
+            dockerfile: Dockerfile
+            args:
+            - BUILD_TARGET=${BUILD_TARGET}
+            - BUILD_WITH_CUDA=${BUILD_WITH_CUDA}
         image: rosenv:ros2-humble-official-01
         container_name: ros2-humble-official-01
         #stdin_open: true
@@ -11,6 +16,8 @@ services:
         - DISPLAY=${DISPLAY}
         - ROS_DOMAIN_ID=${ROS_DOMAIN_ID}
         volumes:
+        - /dev:/dev
         - /tmp/.X11-unix:/tmp/.X11-unix
         - ${PWD}/home:/home/docker/mnt
         - ${PWD}/tmp:/home/docker/mnt/tmp
+        - ${PWD}/setup:/setup
