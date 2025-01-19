@@ -2,7 +2,7 @@
 
 CURRENT_DIR=`pwd`
 cd `dirname $0`
-SCRIPTS_DIT=`pwd`
+SCRIPTS_DIR=`pwd`
 
 USE_ENV='nvidia'
 
