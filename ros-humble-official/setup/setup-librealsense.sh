@@ -24,6 +24,14 @@ mkdir build && cd build
 export PATH=/usr/local/cuda/bin:${PATH}
 export LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH}
 
-cmake ../ -DFORCE_RSUSB_BACKEND=true -DCMAKE_BUILD_TYPE=release -DBUILD_WITH_CUDA=true
+if [ $(uname -m) = 'x86_64' ]
+    then
+        cmake ../ -DFORCE_RSUSB_BACKEND=false -DCMAKE_BUILD_TYPE=release -DBUILD_WITH_CUDA=true
+    fi
+
+if [ $(uname -m) = 'aarch64' ] || [ $(uname -m) = 'arm64' ]
+    then
+        cmake ../ -DFORCE_RSUSB_BACKEND=true -DCMAKE_BUILD_TYPE=release -DBUILD_WITH_CUDA=true
+    fi
 
 sudo make install

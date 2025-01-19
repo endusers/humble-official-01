@@ -18,5 +18,5 @@ git checkout v1.2.5
 
 mkdir build
 cd build
-cmake .. && make -j
+cmake .. && make -j1
 sudo make install

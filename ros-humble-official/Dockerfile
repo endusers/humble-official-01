@@ -80,7 +80,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN if [ $(uname -m) = 'x86_64' ] ; \
     then \
         apt-get update && apt-get install -y --no-install-recommends \
-        ros-humble-gazebo-ros-pkgs; \
+        ros-humble-gazebo-ros-pkgs \
+        && rm -rf /var/lib/apt/lists/* ; \
     else \
         echo "not install ros-humble-gazebo-ros-pkgs" ; \
     fi
