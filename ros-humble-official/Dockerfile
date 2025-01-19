@@ -1,8 +1,14 @@
+ARG UID=1000
+ARG GID=1000
+ARG USER=docker
 ARG BUILD_WITH_CUDA=OFF
 
 FROM ros:humble
 
 ARG BUILD_WITH_CUDA
+ARG UID
+ARG GID
+ARG USER
 
 SHELL ["/bin/bash", "-c"]
 
@@ -156,18 +162,19 @@ RUN pip install setuptools==58.2.0
 
 #RUN apt-get upgrade
 
-RUN useradd -m docker
-RUN echo "docker:docker" | chpasswd
-RUN adduser docker sudo
+RUN groupadd -g $GID $USER
+RUN useradd -m -u $UID -g $GID $USER
+RUN echo $USER:$USER | chpasswd
+RUN adduser $USER sudo
 
-RUN usermod -a -G audio docker
-RUN usermod -a -G dialout docker
-RUN usermod -a -G video docker
-RUN usermod -a -G i2c docker
+RUN usermod -a -G audio $USER
+RUN usermod -a -G dialout $USER
+RUN usermod -a -G video $USER
+RUN usermod -a -G i2c $USER
 
-USER docker
+USER $USER
 
-WORKDIR /home/docker
+WORKDIR /home/$USER
 
 RUN if [ ${BUILD_WITH_CUDA} = ON ] ; \
     then \

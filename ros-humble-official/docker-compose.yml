@@ -6,10 +6,14 @@ services:
             context: .
             dockerfile: Dockerfile
             args:
+            - UID=${UID}
+            - GID=${GID}
+            - USER=${USER}
             - BUILD_TARGET=${BUILD_TARGET}
             - BUILD_WITH_CUDA=${BUILD_WITH_CUDA}
         image: rosenv:ros2-humble-official-01
         container_name: ros2-humble-official-01
+        user: ${UID}:${GID}
         runtime: nvidia
         #stdin_open: true
         tty: true
@@ -23,6 +27,6 @@ services:
         volumes:
         - /dev:/dev
         - /tmp/.X11-unix:/tmp/.X11-unix
-        - ${PWD}/home:/home/docker/mnt
-        - ${PWD}/tmp:/home/docker/mnt/tmp
+        - ${PWD}/home:/home/${USER}/mnt
+        - ${PWD}/tmp:/home/${USER}/mnt/tmp
         - ${PWD}/setup:/setup

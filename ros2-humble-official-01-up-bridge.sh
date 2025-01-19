@@ -4,8 +4,6 @@ CURRENT_DIR=`pwd`
 cd `dirname $0`
 SCRIPTS_DIT=`pwd`
 
-source ${SCRIPTS_DIT}/ros-humble-official/.env
-
 USE_ENV='nvidia'
 
 while getopts wi- OPT
@@ -25,7 +23,9 @@ shift `expr ${OPTIND} - 1`
 
 cd ros-humble-official
 
-export ROS_DOMAIN_ID=100
+sed -i -e 's/UID=.*$/UID='$(id -u)'/g' .env
+sed -i -e 's/GID=.*$/GID='$(id -g)'/g' .env
+sed -i -e 's/USER=.*$/USER='$(id -un)'/g' .env
 
 if [ ${USE_ENV} = 'intel' ]
 then
