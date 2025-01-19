@@ -1,6 +1,6 @@
 ARG UID=1000
 ARG GID=1000
-ARG USER=docker
+ARG USER_NAME=docker
 ARG BUILD_WITH_CUDA=OFF
 
 FROM ros:humble
@@ -8,7 +8,7 @@ FROM ros:humble
 ARG BUILD_WITH_CUDA
 ARG UID
 ARG GID
-ARG USER
+ARG USER_NAME
 
 SHELL ["/bin/bash", "-c"]
 
@@ -162,19 +162,22 @@ RUN pip install setuptools==58.2.0
 
 #RUN apt-get upgrade
 
-RUN groupadd -g $GID $USER
-RUN useradd -m -u $UID -g $GID $USER
-RUN echo $USER:$USER | chpasswd
-RUN adduser $USER sudo
+RUN groupadd -g ${GID} ${USER_NAME}
+RUN useradd -m -u ${UID} -g ${GID} ${USER_NAME}
+RUN echo "${USER_NAME}:${USER_NAME}" | chpasswd
+RUN adduser ${USER_NAME} sudo
 
-RUN usermod -a -G audio $USER
-RUN usermod -a -G dialout $USER
-RUN usermod -a -G video $USER
-RUN usermod -a -G i2c $USER
+# RUN echo "${USER_NAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+RUN echo "${USER_NAME} ALL=(ALL:ALL) ALL" > /etc/sudoers.d/${USER_NAME} && chmod 0440 /etc/sudoers.d/${USER_NAME}
 
-USER $USER
+RUN usermod -a -G audio ${USER_NAME}
+RUN usermod -a -G dialout ${USER_NAME}
+RUN usermod -a -G video ${USER_NAME}
+RUN usermod -a -G i2c ${USER_NAME}
 
-WORKDIR /home/$USER
+USER ${USER_NAME}
+
+WORKDIR /home/${USER_NAME}
 
 RUN if [ ${BUILD_WITH_CUDA} = ON ] ; \
     then \

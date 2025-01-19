@@ -25,7 +25,7 @@ cd ros-humble-official
 
 sed -i -e 's/UID=.*$/UID='$(id -u)'/g' .env
 sed -i -e 's/GID=.*$/GID='$(id -g)'/g' .env
-sed -i -e 's/USER=.*$/USER='$(id -un)'/g' .env
+# sed -i -e 's/USER_NAME=.*$/USER_NAME='$(id -un)'/g' .env
 
 if [ ${USE_ENV} = 'intel' ]
 then

@@ -8,7 +8,7 @@ services:
             args:
             - UID=${UID}
             - GID=${GID}
-            - USER=${USER}
+            - USER_NAME=${USER_NAME}
             - BUILD_TARGET=${BUILD_TARGET}
             - BUILD_WITH_CUDA=${BUILD_WITH_CUDA}
         image: rosenv:ros2-humble-official-01
@@ -29,6 +29,6 @@ services:
         volumes:
         - /dev:/dev
         - /tmp/.X11-unix:/tmp/.X11-unix
-        - ${PWD}/home:/home/${USER}/mnt
-        - ${PWD}/tmp:/home/${USER}/mnt/tmp
+        - ${PWD}/home:/home/${USER_NAME}/mnt
+        - ${PWD}/tmp:/home/${USER_NAME}/mnt/tmp
         - ${PWD}/setup:/setup
