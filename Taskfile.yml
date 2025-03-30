@@ -1,0 +1,72 @@
+version: '3'
+
+vars:
+  DOCKER_DIR: ros-humble-official
+
+tasks:
+  check-env:
+    dir: "{{.DOCKER_DIR}}"
+    dotenv: ['.env']
+    preconditions:
+      - sh: '[ "$RUNTIME_ENV" = "nvidia" ] || [ "$RUNTIME_ENV" = "wsl" ] || [ "$RUNTIME_ENV" = "nogpu" ]'
+        msg: "RUNTIME_ENV is invalid."
+
+  up-host:
+    desc: docker compose up host
+    dir: "{{.DOCKER_DIR}}"
+    dotenv: ['.env']
+    env:
+      NETWORK_MODE: host
+    silent: true
+    cmds:
+      - task: check-env
+      - "sed -i -e 's/NETWORK_MODE=.*$/NETWORK_MODE='${NETWORK_MODE}'/g' .env"
+      - task: up
+
+  up-bridge:
+    desc: docker compose up bridge
+    dir: "{{.DOCKER_DIR}}"
+    dotenv: ['.env']
+    env:
+      NETWORK_MODE: bridge
+    silent: true
+    cmds:
+      - task: check-env
+      - "sed -i -e 's/NETWORK_MODE=.*$/NETWORK_MODE='${NETWORK_MODE}'/g' .env"
+      - task: up
+
+  up:
+    dir: "{{.DOCKER_DIR}}"
+    dotenv: ['.env']
+    silent: true
+    cmds:
+      - task: check-env
+      - "sed -i -e 's/UID=.*$/UID='$(id -u)'/g' .env"
+      - "sed -i -e 's/GID=.*$/GID='$(id -g)'/g' .env"
+      - "PWD=$(pwd) docker compose -f ${NETWORK_MODE}.${RUNTIME_ENV}.compose.yml up -d"
+  exec:
+    desc: docker compose exec
+    dir: "{{.DOCKER_DIR}}"
+    dotenv: ['.env']
+    silent: true
+    cmds:
+      - task: check-env
+      - "PWD=$(pwd) docker compose -f ${NETWORK_MODE}.${RUNTIME_ENV}.compose.yml exec ros2-humble-official-01 /bin/bash"
+
+  stop:
+    desc: docker compose stop
+    dir: "{{.DOCKER_DIR}}"
+    dotenv: ['.env']
+    silent: true
+    cmds:
+      - task: check-env
+      - "PWD=$(pwd) docker compose -f ${NETWORK_MODE}.${RUNTIME_ENV}.compose.yml stop"
+
+  build:
+    desc: docker compose build
+    dir: "{{.DOCKER_DIR}}"
+    dotenv: ['.env']
+    silent: true
+    cmds:
+      - task: check-env
+      - "PWD=$(pwd) docker compose -f ${NETWORK_MODE}.${RUNTIME_ENV}.compose.yml build"

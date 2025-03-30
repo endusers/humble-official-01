@@ -78,8 +78,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-depthimage-to-laserscan \
     ros-humble-geographic-msgs \
     ros-humble-geometry2 \
+    ros-humble-tf2-ros \
     ros-humble-tf2-geometry-msgs \
     ros-humble-plotjuggler-ros \
+    ros-humble-topic-tools \
     && rm -rf /var/lib/apt/lists/*
 
 # gazebo-ros-pkgs
@@ -116,11 +118,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-gtsam \
     ros-humble-libpointmatcher \
     ros-humble-octomap \
+    ros-humble-octomap-ros \
+    ros-humble-octomap-msgs \
+    ros-humble-octomap-rviz-plugins \
     # ros-humble-grid-map-core \
     # ros-humble-grid-map-ros \
     ros-humble-pcl-ros \
     ros-humble-velodyne \
-    ros-humble-octomap-msgs \
     && rm -rf /var/lib/apt/lists/*
 
 # Groot
@@ -181,9 +185,11 @@ WORKDIR /home/${USER_NAME}
 
 RUN if [ ${BUILD_WITH_CUDA} = ON ] ; \
     then \
+      echo '' >> ~/.bashrc ; \
       echo 'export PATH=/usr/local/cuda/bin:${PATH}' >> ~/.bashrc ; \
       echo 'export LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH}' >> ~/.bashrc ; \
     fi
 
+RUN echo '' >> ~/.bashrc
 RUN echo 'source /opt/ros/humble/setup.bash' >> ~/.bashrc
 RUN source ~/.bashrc
