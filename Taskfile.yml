@@ -2,6 +2,7 @@ version: '3'
 
 vars:
   DOCKER_DIR: ros-humble-official
+  SERVICE: ros2-humble-official-01
 
 tasks:
   check-env:
@@ -51,7 +52,7 @@ tasks:
     silent: true
     cmds:
       - task: check-env
-      - "PWD=$(pwd) docker compose -f ${NETWORK_MODE}.${RUNTIME_ENV}.compose.yml exec ros2-humble-official-01 /bin/bash"
+      - "PWD=$(pwd) docker compose -f ${NETWORK_MODE}.${RUNTIME_ENV}.compose.yml exec {{.SERVICE}} /bin/bash"
 
   stop:
     desc: docker compose stop
