@@ -1,8 +1,8 @@
 version: '3'
 
 vars:
-  DOCKER_DIR: ros-humble-official
-  SERVICE: ros2-humble-official-01
+  DOCKER_DIR: docker
+  SERVICE: ros2-humble-utility
 
 tasks:
   check-env:

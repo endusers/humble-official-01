@@ -1,7 +1,7 @@
 
 services:
 
-    ros2-humble-official-01:
+    ros2-humble-utility:
         build:
             context: .
             dockerfile: Dockerfile
@@ -11,21 +11,15 @@ services:
             - USER_NAME=${USER_NAME}
             - BUILD_TARGET=${BUILD_TARGET}
             - BUILD_WITH_CUDA=${BUILD_WITH_CUDA}
-        image: rosenv:ros2-humble-official-01
-        container_name: ros2-humble-official-01
-        network_mode: host
-        privileged: true
-        #security_opt:
-        #- apparmor:unconfined
-        runtime: nvidia
+        image: rosenv:ros2-humble-utility
+        container_name: ros2-humble-utility
         #stdin_open: true
         tty: true
         devices:
         - /dev/snd:/dev/snd
+        - /dev/dri:/dev/dri
         environment:
         - DISPLAY=${DISPLAY}
-        - NVIDIA_VISIBLE_DEVICES=all
-        - NVIDIA_DRIVER_CAPABILITIES=all
         - ROS_DOMAIN_ID=${ROS_DOMAIN_ID}
         volumes:
         - /dev:/dev

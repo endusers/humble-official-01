@@ -1,7 +1,7 @@
 
 services:
 
-    ros2-humble-official-01:
+    ros2-humble-utility:
         build:
             context: .
             dockerfile: Dockerfile
@@ -11,8 +11,8 @@ services:
             - USER_NAME=${USER_NAME}
             - BUILD_TARGET=${BUILD_TARGET}
             - BUILD_WITH_CUDA=${BUILD_WITH_CUDA}
-        image: rosenv:ros2-humble-official-01
-        container_name: ros2-humble-official-01
+        image: rosenv:ros2-humble-utility
+        container_name: ros2-humble-utility
         network_mode: host
         privileged: true
         #security_opt:
