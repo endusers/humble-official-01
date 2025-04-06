@@ -71,4 +71,6 @@ tasks:
     silent: true
     cmds:
       - task: check-env
+      - "sed -i -e 's/UID=.*$/UID='$(id -u)'/g' .env"
+      - "sed -i -e 's/GID=.*$/GID='$(id -g)'/g' .env"
       - "PWD=$(pwd) docker compose -f ${NETWORK_MODE}.${RUNTIME_ENV}.compose.yml build"
