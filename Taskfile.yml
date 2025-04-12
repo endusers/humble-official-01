@@ -13,6 +13,14 @@ tasks:
       - sh: '[ "$RUNTIME_ENV" = "nvidia" ] || [ "$RUNTIME_ENV" = "wsl" ] || [ "$RUNTIME_ENV" = "nogpu" ]'
         msg: "RUNTIME_ENV is invalid."
 
+  update-env:
+    dir: "{{.DOCKER_DIR}}"
+    dotenv: ['.env']
+    silent: true
+    cmds:
+      - "sed -i -e 's/UID=.*$/UID='$(id -u)'/g' .env"
+      - "sed -i -e 's/GID=.*$/GID='$(id -g)'/g' .env"
+
   up-host:
     desc: docker compose up host
     dir: "{{.DOCKER_DIR}}"
@@ -21,9 +29,10 @@ tasks:
       NETWORK_MODE: host
     silent: true
     cmds:
-      - task: check-env
       - "sed -i -e 's/NETWORK_MODE=.*$/NETWORK_MODE='${NETWORK_MODE}'/g' .env"
-      - task: up
+      - task: update-env
+      - task: check-env
+      - task: compose-up
 
   up-bridge:
     desc: docker compose up bridge
@@ -33,19 +42,11 @@ tasks:
       NETWORK_MODE: bridge
     silent: true
     cmds:
-      - task: check-env
       - "sed -i -e 's/NETWORK_MODE=.*$/NETWORK_MODE='${NETWORK_MODE}'/g' .env"
-      - task: up
-
-  up:
-    dir: "{{.DOCKER_DIR}}"
-    dotenv: ['.env']
-    silent: true
-    cmds:
+      - task: update-env
       - task: check-env
-      - "sed -i -e 's/UID=.*$/UID='$(id -u)'/g' .env"
-      - "sed -i -e 's/GID=.*$/GID='$(id -g)'/g' .env"
-      - "PWD=$(pwd) docker compose -f ${NETWORK_MODE}.${RUNTIME_ENV}.compose.yml -p {{.PROJECT}} up -d"
+      - task: compose-up
+
   exec:
     desc: docker compose exec
     dir: "{{.DOCKER_DIR}}"
@@ -53,7 +54,7 @@ tasks:
     silent: true
     cmds:
       - task: check-env
-      - "PWD=$(pwd) docker compose -f ${NETWORK_MODE}.${RUNTIME_ENV}.compose.yml  -p {{.PROJECT}} exec {{.SERVICE}} /bin/bash"
+      - task: compose-exec
 
   stop:
     desc: docker compose stop
@@ -62,7 +63,7 @@ tasks:
     silent: true
     cmds:
       - task: check-env
-      - "PWD=$(pwd) docker compose -f ${NETWORK_MODE}.${RUNTIME_ENV}.compose.yml  -p {{.PROJECT}} stop"
+      - task: compose-stop
 
   build:
     desc: docker compose build
@@ -70,7 +71,34 @@ tasks:
     dotenv: ['.env']
     silent: true
     cmds:
+      - task: update-env
       - task: check-env
-      - "sed -i -e 's/UID=.*$/UID='$(id -u)'/g' .env"
-      - "sed -i -e 's/GID=.*$/GID='$(id -g)'/g' .env"
+      - task: compose-build
+
+  compose-up:
+    dir: "{{.DOCKER_DIR}}"
+    dotenv: ['.env']
+    silent: true
+    cmds:
+      - "PWD=$(pwd) docker compose -f ${NETWORK_MODE}.${RUNTIME_ENV}.compose.yml -p {{.PROJECT}} up -d"
+
+  compose-exec:
+    dir: "{{.DOCKER_DIR}}"
+    dotenv: ['.env']
+    silent: true
+    cmds:
+      - "PWD=$(pwd) docker compose -f ${NETWORK_MODE}.${RUNTIME_ENV}.compose.yml  -p {{.PROJECT}} exec {{.SERVICE}} /bin/bash"
+
+  compose-stop:
+    dir: "{{.DOCKER_DIR}}"
+    dotenv: ['.env']
+    silent: true
+    cmds:
+      - "PWD=$(pwd) docker compose -f ${NETWORK_MODE}.${RUNTIME_ENV}.compose.yml  -p {{.PROJECT}} stop"
+
+  compose-build:
+    dir: "{{.DOCKER_DIR}}"
+    dotenv: ['.env']
+    silent: true
+    cmds:
       - "PWD=$(pwd) docker compose -f ${NETWORK_MODE}.${RUNTIME_ENV}.compose.yml build"
