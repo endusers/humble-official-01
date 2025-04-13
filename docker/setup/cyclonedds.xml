@@ -4,6 +4,7 @@
     <General>
       <Interfaces>
         <!-- <NetworkInterface autodetermine="false" name="lo" priority="default" multicast="default" /> -->
+        <NetworkInterface autodetermine="false" address="192.168.100.0" priority="default" multicast="default" />
       </Interfaces>
       <AllowMulticast>default</AllowMulticast>
       <MaxMessageSize>65500B</MaxMessageSize>
