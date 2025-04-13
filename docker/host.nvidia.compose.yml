@@ -22,11 +22,12 @@ services:
         tty: true
         devices:
         - /dev/snd:/dev/snd
+        env_file:
+        - .env
         environment:
         - DISPLAY=${DISPLAY}
         - NVIDIA_VISIBLE_DEVICES=all
         - NVIDIA_DRIVER_CAPABILITIES=all
-        - ROS_DOMAIN_ID=${ROS_DOMAIN_ID}
         volumes:
         - /dev:/dev
         - /tmp/.X11-unix:/tmp/.X11-unix

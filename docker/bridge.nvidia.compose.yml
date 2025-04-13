@@ -13,16 +13,20 @@ services:
             - BUILD_WITH_CUDA=${BUILD_WITH_CUDA}
         image: rosenv:ros2-humble-utility
         container_name: ros2-humble-utility
+        sysctls:
+            net.ipv4.ipfrag_time: 3
+            net.ipv4.ipfrag_high_thresh: 134217728
         runtime: nvidia
         #stdin_open: true
         tty: true
         devices:
         - /dev/snd:/dev/snd
+        env_file:
+        - .env
         environment:
         - DISPLAY=${DISPLAY}
         - NVIDIA_VISIBLE_DEVICES=all
         - NVIDIA_DRIVER_CAPABILITIES=all
-        - ROS_DOMAIN_ID=${ROS_DOMAIN_ID}
         volumes:
         - /dev:/dev
         - /tmp/.X11-unix:/tmp/.X11-unix

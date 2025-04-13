@@ -61,6 +61,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-humble-rmw-cyclonedds-cpp \
     ros-humble-rosbag2-storage-mcap \
     ros-humble-rqt-tf-tree \
     ros-humble-rqt-robot-steering \
@@ -189,6 +190,12 @@ RUN if [ ${BUILD_WITH_CUDA} = ON ] ; \
       echo 'export PATH=/usr/local/cuda/bin:${PATH}' >> ~/.bashrc ; \
       echo 'export LD_LIBRARY_PATH=/usr/local/cuda/lib64:${LD_LIBRARY_PATH}' >> ~/.bashrc ; \
     fi
+
+COPY --chown=${USER_NAME}:${USER_NAME} /setup/cyclonedds.xml ./
+
+RUN echo '' >> ~/.bashrc
+RUN echo 'export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp' >> ~/.bashrc
+RUN echo "export CYCLONEDDS_URI=file:///home/${USER_NAME}/cyclonedds.xml" >> ~/.bashrc
 
 RUN echo '' >> ~/.bashrc
 RUN echo 'source /opt/ros/humble/setup.bash' >> ~/.bashrc
