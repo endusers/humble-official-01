@@ -1,0 +1,35 @@
+
+services:
+
+    ros2-humble-utility:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            args:
+            - UID=${UID}
+            - GID=${GID}
+            - USER_NAME=${USER_NAME}
+            - BUILD_TARGET=${BUILD_TARGET}
+            - BUILD_WITH_CUDA=${BUILD_WITH_CUDA}
+        image: rosenv:ros2-humble-utility
+        container_name: ros2-humble-utility
+        network_mode: host
+        privileged: true
+        #security_opt:
+        #- apparmor:unconfined
+        #stdin_open: true
+        tty: true
+        env_file:
+        - .env
+        environment:
+        - DISPLAY=${DISPLAY}
+        - WAYLAND_DISPLAY=${WAYLAND_DISPLAY}
+        - XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR}
+        - PULSE_SERVER=${PULSE_SERVER}
+        volumes:
+        - /dev:/dev
+        - /tmp/.X11-unix:/tmp/.X11-unix
+        - /mnt/wslg:/mnt/wslg
+        - ${PWD}/home:/home/${USER_NAME}/mnt
+        - ${PWD}/tmp:/home/${USER_NAME}/mnt/tmp
+        - ${PWD}/setup:/setup
