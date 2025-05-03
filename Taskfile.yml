@@ -20,6 +20,10 @@ tasks:
     cmds:
       - "sed -i -e 's/UID=.*$/UID='$(id -u)'/g' .env"
       - "sed -i -e 's/GID=.*$/GID='$(id -g)'/g' .env"
+      - "sed -i -e 's/GID_AUDIO=.*$/GID_AUDIO='$(getent group audio | cut -d: -f3)'/g' .env"
+      - "sed -i -e 's/GID_DIALOUT=.*$/GID_DIALOUT='$(getent group dialout | cut -d: -f3)'/g' .env"
+      - "sed -i -e 's/GID_VIDEO=.*$/GID_VIDEO='$(getent group video | cut -d: -f3)'/g' .env"
+      - "sed -i -e 's/GID_I2C=.*$/GID_I2C='$(getent group i2c | cut -d: -f3)'/g' .env"
 
   up-host:
     desc: docker compose up host

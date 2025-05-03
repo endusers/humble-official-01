@@ -11,6 +11,10 @@ services:
             - USER_NAME=${USER_NAME}
             - BUILD_TARGET=${BUILD_TARGET}
             - BUILD_WITH_CUDA=${BUILD_WITH_CUDA}
+            - GID_AUDIO=${GID_AUDIO}
+            - GID_DIALOUT=${GID_DIALOUT}
+            - GID_VIDEO=${GID_VIDEO}
+            - GID_I2C=${GID_I2C}
         image: rosenv:ros2-humble-utility
         container_name: ros2-humble-utility
         sysctls:

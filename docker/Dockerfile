@@ -1,18 +1,22 @@
-ARG UID=1000
-ARG GID=1000
-ARG USER_NAME=docker
-ARG BUILD_WITH_CUDA=OFF
-
 FROM ros:humble
 
-ARG BUILD_WITH_CUDA
 ARG UID
 ARG GID
 ARG USER_NAME
+ARG BUILD_WITH_CUDA
+ARG GID_AUDIO
+ARG GID_DIALOUT
+ARG GID_VIDEO
+ARG GID_I2C
 
 SHELL ["/bin/bash", "-c"]
 
 WORKDIR /home/setup
+
+RUN if [ -n "${GID_AUDIO}" ] ; then groupadd -f -g ${GID_AUDIO} audio ; fi
+RUN if [ -n "${GID_DIALOUT}" ] ; then groupadd -f -g ${GID_DIALOUT} dialout ; fi
+RUN if [ -n "${GID_VIDEO}" ] ; then groupadd -f -g ${GID_VIDEO} video ; fi
+RUN if [ -n "${GID_I2C}" ] ; then groupadd -f -g ${GID_I2C} i2c ; fi
 
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive \
@@ -47,6 +51,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     terminator \
     i2c-tools \
     libapr1-dev \
+    libserial-dev \
+    gfortran \
     && rm -rf /var/lib/apt/lists/*
 
 COPY /setup/setup-cuda.sh ./
@@ -83,6 +89,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-tf2-geometry-msgs \
     ros-humble-plotjuggler-ros \
     ros-humble-topic-tools \
+    ros-humble-rviz-2d-overlay-plugins \
     && rm -rf /var/lib/apt/lists/*
 
 # gazebo-ros-pkgs
@@ -93,6 +100,18 @@ RUN if [ $(uname -m) = 'x86_64' ] ; \
         && rm -rf /var/lib/apt/lists/* ; \
     else \
         echo "not install ros-humble-gazebo-ros-pkgs" ; \
+    fi
+
+# Gazebo Fortress
+RUN if [ $(uname -m) = 'x86_64' ] ; \
+    then \
+        curl https://packages.osrfoundation.org/gazebo.gpg --output /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg ; \
+        bash -c 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null' ; \
+        apt-get update && apt-get install -y --no-install-recommends \
+        ignition-fortress \
+        && rm -rf /var/lib/apt/lists/* ; \
+    else \
+        echo "not install Gazebo Fortress" ; \
     fi
 
 # navigation2
