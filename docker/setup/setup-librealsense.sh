@@ -13,7 +13,8 @@ cd ${SCRIPTS_DIR}/librealsense
 cd ${SCRIPTS_DIR}/librealsense
 git clone https://github.com/IntelRealSense/librealsense.git
 cd ${SCRIPTS_DIR}/librealsense/librealsense
-git checkout v2.56.3
+# git checkout v2.56.3
+git checkout v2.57.7
 
 sudo cp config/99-realsense-libusb.rules /etc/udev/rules.d/ 
 sudo cp config/99-realsense-d4xx-mipi-dfu.rules /etc/udev/rules.d/

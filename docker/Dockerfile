@@ -4,9 +4,11 @@ ARG UID
 ARG GID
 ARG USER_NAME
 ARG BUILD_WITH_CUDA
+ARG GAZEBO
 ARG GID_AUDIO
 ARG GID_DIALOUT
 ARG GID_VIDEO
+ARG GID_RENDER
 ARG GID_I2C
 
 SHELL ["/bin/bash", "-c"]
@@ -16,6 +18,7 @@ WORKDIR /home/setup
 RUN if [ -n "${GID_AUDIO}" ] ; then groupadd -f -g ${GID_AUDIO} audio ; fi
 RUN if [ -n "${GID_DIALOUT}" ] ; then groupadd -f -g ${GID_DIALOUT} dialout ; fi
 RUN if [ -n "${GID_VIDEO}" ] ; then groupadd -f -g ${GID_VIDEO} video ; fi
+RUN if [ -n "${GID_RENDER}" ] ; then groupadd -f -g ${GID_RENDER} render ; fi
 RUN if [ -n "${GID_I2C}" ] ; then groupadd -f -g ${GID_I2C} i2c ; fi
 
 RUN apt-get update && \
@@ -93,7 +96,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # gazebo-ros-pkgs
-RUN if [ $(uname -m) = 'x86_64' ] ; \
+RUN if [ $(uname -m) = 'x86_64' ] && [ ${GAZEBO} = CLASSIC ] ; \
     then \
         apt-get update && apt-get install -y --no-install-recommends \
         ros-humble-gazebo-ros-pkgs \
@@ -102,16 +105,23 @@ RUN if [ $(uname -m) = 'x86_64' ] ; \
         echo "not install ros-humble-gazebo-ros-pkgs" ; \
     fi
 
-# Gazebo Fortress
-RUN if [ $(uname -m) = 'x86_64' ] ; \
+# Gazebo Harmonic
+RUN if [ $(uname -m) = 'x86_64' ] && [ ${GAZEBO} = HARMONIC ]; \
     then \
         curl https://packages.osrfoundation.org/gazebo.gpg --output /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg ; \
         bash -c 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null' ; \
         apt-get update && apt-get install -y --no-install-recommends \
-        ignition-fortress \
+        gz-harmonic \
+        ros-humble-ros-gzharmonic \
         && rm -rf /var/lib/apt/lists/* ; \
     else \
-        echo "not install Gazebo Fortress" ; \
+        echo "not install Gazebo Harmonic" ; \
+    fi
+
+COPY /setup/setup-rgl-gazebo-plugin.sh ./
+RUN if [ $(uname -m) = 'x86_64' ] && [ ${GAZEBO} = HARMONIC ]; \
+    then \
+        ./setup-rgl-gazebo-plugin.sh ; \
     fi
 
 # navigation2
@@ -197,6 +207,7 @@ RUN echo "${USER_NAME} ALL=(ALL:ALL) ALL" > /etc/sudoers.d/${USER_NAME} && chmod
 RUN usermod -a -G audio ${USER_NAME}
 RUN usermod -a -G dialout ${USER_NAME}
 RUN usermod -a -G video ${USER_NAME}
+RUN usermod -a -G render ${USER_NAME}
 RUN usermod -a -G i2c ${USER_NAME}
 
 USER ${USER_NAME}
